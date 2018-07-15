@@ -1,3 +1,24 @@
+"""
+# Callback method
+def sub_cb(topic, msg):
+    print((topic, msg))
+
+# Initialize and connect
+c = MQTTClient("clientname", "localhost", port=1883)
+c.connect()
+
+# Subscribe to topic and wait for one message
+c.set_callback(sub_cb)
+c.subscribe("subscribe/topic/name")
+c.wait_msg()
+
+# Publish message
+c.publish("publish/topic/name", "The published message")
+
+# Clean up
+c.disconnect()
+"""
+
 import usocket as socket
 import ustruct as struct
 from ubinascii import hexlify
