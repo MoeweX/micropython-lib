@@ -29,7 +29,7 @@ class TB6612_1CH:
 
         self.p_channel_enable = Pin(p_channel_enable_id, mode=Pin.OUT)
 
-    def set_voltage(self, percent):
+    def set_voltage_percent(self, percent):
         scale = percent / 100.0
         if scale > 1.0:
             scale = 1.0
