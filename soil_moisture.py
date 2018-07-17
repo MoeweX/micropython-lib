@@ -23,5 +23,9 @@ class SoilMoisture:
 
     def get_moisture(self):
         voltage = self.p_analog()
-        print("Measured a voltage of {}".format(voltage))
-        return voltage
+        diff = self.air_voltage - self.water_voltage
+        a = voltage - self.water_voltage
+        b = a / diff
+        percent = int((b - 1) * -100)
+        print("Moisture is {}%".format(percent))
+        return percent
