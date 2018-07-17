@@ -1,4 +1,7 @@
 """
+MQTT Client module that supports QoS 0 and 1. Automatically reconnects to broker on error.
+Usage example:
+
 # Callback method
 def sub_cb(topic, msg):
     print((topic, msg))
