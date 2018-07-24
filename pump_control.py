@@ -39,7 +39,7 @@ class PumpControl:
         if (not self.pwm_c is None):
             self.pwm_c.duty_cycle(self.__duty_cycle)
 
-    def stop_pump(self):
+    def stop_pump(self, alarm=None):
         if (not self.alarm is None):
             self.alarm.cancel()
         self.pump_out.value(0)
