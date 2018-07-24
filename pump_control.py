@@ -30,16 +30,19 @@ class PumpControl:
         if (not self.pwm_c is None):
             self.pwm_c.duty_cycle(duty_cycle)
 
+    def _timeout(self, alarm):
+        self.stop_pump()
+
     def interval(self, interval):
         self.__interval = interval
 
     def start_pump(self):
-        self.alarm = Timer.Alarm(handler=self.stop_pump, s=self.__interval)
+        self.alarm = Timer.Alarm(handler=self._timeout, s=self.__interval)
         self.pump_out.value(1)
         if (not self.pwm_c is None):
             self.pwm_c.duty_cycle(self.__duty_cycle)
 
-    def stop_pump(self, alarm=None):
+    def stop_pump(self):
         if (not self.alarm is None):
             self.alarm.cancel()
         self.pump_out.value(0)
