@@ -243,40 +243,65 @@ LICENSE umqtt.robust (MIT): https://github.com/micropython/micropython-lib/blob/
 class MQTTClient(MQTTClientSimple):
 
     DELAY = 2
-    DEBUG = False
+    ATTEMPTS = 3
+    DEBUG = True
+    connected = False
 
     def delay(self, i):
         utime.sleep(self.DELAY)
 
-    def log(self, in_reconnect, e):
+    def log(self, message):
         if self.DEBUG:
-            if in_reconnect:
-                print("mqtt reconnect: %r" % e)
-            else:
-                print("mqtt: %r" % e)
+            print(message)
+
+    def connect(self, clean_session=True):
+        try:
+            val = super().connect(clean_session)
+            self.connected = True
+            return val
+        except OSError as e:
+            self.log("Could not connect to broker, disabling MQTT")
+            self.connected = False
+
+    def disconnect(self):
+        if self.connected:
+            try:
+                super().disconnect()
+            except OSError as e:
+                self.log("Exception during disconnect, disabling MQTT")
+        self.connected = False
 
     def reconnect(self):
         i = 0
-        while 1:
+        while i < self.ATTEMPTS:
             try:
-                return super().connect(False)
+                val = super().connect(False)
+                self.connected = True
+                self.log("Connected to broker")
+                return val
             except OSError as e:
-                self.log(True, e)
+                self.log("Failed to reconnect, next attempt")
+                self.connected = False
                 i += 1
                 self.delay(i)
+        self.log("Reconnection failed, disabling MQTT")
 
     def publish(self, topic, msg, retain=False, qos=0):
-        while 1:
+        tryAgain = True
+        while tryAgain and self.connected:
             try:
                 return super().publish(topic, msg, retain, qos)
             except OSError as e:
-                self.log(False, e)
+                self.log("Could not publish as disconnected, reconnecting ...")
             self.reconnect()
+            tryAgain = False
 
     def wait_msg(self):
-        while 1:
+        tryAgain = True
+        while tryAgain and self.connected:
             try:
                 return super().wait_msg()
             except OSError as e:
-                self.log(False, e)
+                self.log("Could not wait for message as disconnected, reconnecting ...")
             self.reconnect()
+            tryAgain = False
