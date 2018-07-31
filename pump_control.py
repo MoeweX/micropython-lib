@@ -1,6 +1,7 @@
 """
 Module to manage a pump with optional PWM functionality.
 The pump will turn on for a specified interval upon calling start_pump.
+Set Interval to 0 to disable this functionality.
 
 Usage Example:
 
@@ -13,22 +14,26 @@ pump.start_pump()
 from machine import Pin
 from machine import PWM
 from machine import Timer
+from tb6612_single_channel import TB6612_1CH
 
-class PumpControl:
-    def __init__(self, pump_pin, pwm_pin=None, duty_cycle=1.0, interval=5):
-        self.pump_pin = pump_pin
+class PumpControl(TB6612_1CH):
+
+    def __init__(self, p_pwm_id, p_channel_enable_id, channel_name, pwm_timer_id=0, pwm_channel_id=0, duty_cycle=1.0, interval=5):
+        """
+        p_pwm_id            -- the id of the pwm pin (e.g, connect pin to PWMA)
+        p_channel_enable_id -- the id of the motor enable pin (e.g., connect pin to AIN2)
+        channel_name        -- the name of the channel used for logging
+        pwm_timer_id        -- [0], id of the timer, must be 0 to 3
+        pwm_channel_id      -- [0], id of the pwm channel, must be 0 to 7
+        """
+        super().__init__(p_pwm_id, p_channel_enable_id, channel_name, pwm_timer_id, pwm_channel_id)
         self.__duty_cycle = duty_cycle
-        if (not pwm_pin is None):
-            self.pwm_pin = pwm_pin
-            self.pwm = PWM(0, frequency=5000)
-            self.pwm_c = self.pwm.channel(0, pin=self.pwm_pin, duty_cycle=self.__duty_cycle)
         self.__interval = interval
-        self.pump_out = Pin(self.pump_pin, mode=Pin.OUT)
 
     def duty_cycle(self, duty_cycle):
         self.__duty_cycle = duty_cycle
-        if (not self.pwm_c is None):
-            self.pwm_c.duty_cycle(duty_cycle)
+        if (self.is_running()):
+            self.set_voltage_percent(duty_cycle*100)
 
     def _timeout(self, alarm):
         self.stop_pump()
@@ -37,14 +42,16 @@ class PumpControl:
         self.__interval = interval
 
     def start_pump(self):
-        self.alarm = Timer.Alarm(handler=self._timeout, s=self.__interval)
-        self.pump_out.value(1)
-        if (not self.pwm_c is None):
-            self.pwm_c.duty_cycle(self.__duty_cycle)
+        if (self.__interval > 0):
+            self.alarm = Timer.Alarm(handler=self._timeout, s=self.__interval)
+        self.set_voltage_percent(self.__duty_cycle*100)
 
     def stop_pump(self):
-        if (not self.alarm is None):
+        try:
             self.alarm.cancel()
-        self.pump_out.value(0)
-        if (not self.pwm_c is None):
-            self.pwm_c.duty_cycle(0)
+        except Exception:
+            pass
+        self.shut_off()
+
+    def is_running(self):
+        return self.p_channel_enable.value()
