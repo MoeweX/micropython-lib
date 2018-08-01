@@ -25,7 +25,7 @@ class PumpControl(TB6612_1CH):
         channel_name        -- the name of the channel used for logging
         pwm_timer_id        -- [0], id of the timer, must be 0 to 3
         pwm_channel_id      -- [0], id of the pwm channel, must be 0 to 7
-        duty_cycle          -- [1], the duty cycle of the pump, from 0-1
+        duty_cycle          -- [1], the duty cycle of the pump pwm channel and thereby the pump speed, from 0-1
         interval            -- [10], the time the pump runs upon calling start_pump()
         """
         super().__init__(p_pwm_id, p_channel_enable_id, channel_name, pwm_timer_id, pwm_channel_id)
