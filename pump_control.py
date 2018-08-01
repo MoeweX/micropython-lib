@@ -25,6 +25,8 @@ class PumpControl(TB6612_1CH):
         channel_name        -- the name of the channel used for logging
         pwm_timer_id        -- [0], id of the timer, must be 0 to 3
         pwm_channel_id      -- [0], id of the pwm channel, must be 0 to 7
+        duty_cycle          -- [1], the duty cycle of the pump, from 0-1
+        interval            -- [10], the time the pump runs upon calling start_pump()
         """
         super().__init__(p_pwm_id, p_channel_enable_id, channel_name, pwm_timer_id, pwm_channel_id)
         self.__duty_cycle = duty_cycle
@@ -38,8 +40,10 @@ class PumpControl(TB6612_1CH):
     def _timeout(self, alarm):
         self.stop_pump()
 
-    def interval(self, interval):
-        self.__interval = interval
+    def interval(self, interval=None):
+        if (not interval = None):
+            self.__interval = interval
+        return self.__interval
 
     def start_pump(self):
         if (self.__interval > 0):
