@@ -5,7 +5,7 @@ Set Interval to 0 to disable this functionality.
 
 Usage Example:
 
-pump = PumpControl('P20', 'P21', 0.5, 10)
+pump = PumpControl(p_pwm_id='P20', p_channel_enable_id='P21', duty_cycle=0.5, interval=10, channel_name="cactus")
 pump.start_pump()
 
 """
