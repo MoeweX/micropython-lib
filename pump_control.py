@@ -41,7 +41,7 @@ class PumpControl(TB6612_1CH):
         self.stop_pump()
 
     def interval(self, interval=None):
-        if (not interval = None):
+        if (not interval is None):
             self.__interval = interval
         return self.__interval
 
