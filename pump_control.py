@@ -1,13 +1,14 @@
 """
 Module to manage a pump with optional PWM functionality.
 The pump will turn on for a specified interval upon calling start_pump.
-Set Interval to 0 to disable this functionality.
+Set Interval to 0 to disable automatic shut off.
+
+REQUIRES: tb6612_single_channel
 
 Usage Example:
 
 pump = PumpControl(p_pwm_id='P20', p_channel_enable_id='P21', duty_cycle=0.5, interval=10, channel_name="cactus")
 pump.start_pump()
-
 """
 
 

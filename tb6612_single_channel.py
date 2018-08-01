@@ -1,6 +1,9 @@
 """
-Module to control the voltage of a single tb6612 driver channel.
-Note, that one PWM pin controls two channels simultaniously.
+Module that can be used to control four channels via one TB6612.
+Note, that only one channel per H-Bridge is allowed to be active at once.
+Otherwise, both channels short (so a motor would stop immediatly).
+
+One PWM pin controls the speed of two channels simultaniously.
 Voltage can be set in percent, 0% = 0V, 100% = Vin
 
 Usage example:
@@ -9,6 +12,7 @@ tb_channel = TB6612_1CH("P22", "P21", "voltage channel")
 tb_channel.set_voltage(80) # set voltage to 80%
 tb_channel.shut_off() # shut off
 """
+
 
 from machine import Pin
 from machine import PWM

@@ -1,5 +1,6 @@
 """
 MQTT Client module that supports QoS 0 and 1. Automatically reconnects to broker on error.
+
 Usage example:
 
 # Callback method
@@ -21,6 +22,7 @@ c.publish("publish/topic/name", "The published message")
 # Clean up
 c.disconnect()
 """
+
 
 import usocket as socket
 import ustruct as struct
