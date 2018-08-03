@@ -12,6 +12,7 @@ sensor.get_moisture()
 
 
 from machine import ADC
+import time
 
 class SoilMoisture:
 
@@ -22,8 +23,15 @@ class SoilMoisture:
         adc = ADC() # create an ADC object
         self.p_analog = adc.channel(pin=p_analog_id, attn=ADC.ATTN_11DB) # create an analog pin
 
+    def read_average(self):
+        measurements = []
+        for i in range(0, 5):
+            measurements.append(self.p_analog())
+            time.sleep(0.2)
+        return sum(measurements) / float(len(measurements))
+
     def get_moisture(self):
-        voltage = self.p_analog()
+        voltage = self.read_average()
         diff = self.air_voltage - self.water_voltage
         a = voltage - self.water_voltage
         b = a / diff
