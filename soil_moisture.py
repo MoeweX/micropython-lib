@@ -26,7 +26,7 @@ class SoilMoisture:
     def read_average(self):
         measurements = []
         for i in range(0, 5):
-            measurements.append(self.p_analog())
+            measurements.append(self.p_analog.voltage())
             time.sleep(0.2)
         return sum(measurements) / float(len(measurements))
 
