@@ -23,7 +23,7 @@ class SoilMoisture:
         adc = ADC() # create an ADC object
         self.p_analog = adc.channel(pin=p_analog_id, attn=ADC.ATTN_11DB) # create an analog pin
 
-    def read_average(self):
+    def get_raw_avg(self):
         measurements = []
         for i in range(0, 5):
             measurements.append(self.p_analog.voltage())
@@ -31,7 +31,7 @@ class SoilMoisture:
         return sum(measurements) / float(len(measurements))
 
     def get_moisture(self):
-        voltage = self.read_average()
+        voltage = self.get_raw_avg()
         diff = self.air_voltage - self.water_voltage
         a = voltage - self.water_voltage
         b = a / diff
